@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@core/tat/runtime": ["tat/browser.ts"],
+      "core/tat/runtime": ["tat/browser.ts"],
+      "@core/tat/*": ["tat/*"],
+      "core/tat/*": ["tat/*"]
+    }
+  },
+  "include": ["src", "features"]
+}

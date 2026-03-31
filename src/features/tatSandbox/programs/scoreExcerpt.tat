@@ -1,0 +1,123 @@
+scoreMain = <{ kind: "score", title: "ScoreLens Demo" }>
+partP1 = <{ kind: "part", partId: "P1", name: "Soprano", abbreviation: "S" }>
+
+measureP1_1 = <{ kind: "measure", partId: "P1", number: 1 }>
+measureP1_2 = <{ kind: "measure", partId: "P1", number: 2 }>
+
+noteP1_1_1_1 = <{ kind: "note", partId: "P1", measureNumber: 1, voice: "1", type: "quarter" }>
+pitchNoteP1_1_1_1 = <{ kind: "pitch", step: "A", octave: 4 }>
+rhythmNoteP1_1_1_1 = <{ kind: "rhythm", duration: 2, type: "quarter", dots: 0 }>
+lyricNoteP1_1_1_1 = <{ kind: "lyric", number: "1", text: "oo", syllabic: "single" }>
+
+noteP1_1_1_2 = <{ kind: "note", partId: "P1", measureNumber: 1, voice: "1", type: "quarter" }>
+pitchNoteP1_1_1_2 = <{ kind: "pitch", step: "G", alter: 1, octave: 4 }>
+rhythmNoteP1_1_1_2 = <{ kind: "rhythm", duration: 2, type: "quarter", dots: 0 }>
+
+noteP1_1_1_3 = <{ kind: "note", partId: "P1", measureNumber: 1, voice: "1", type: "quarter" }>
+pitchNoteP1_1_1_3 = <{ kind: "pitch", step: "A", octave: 4 }>
+rhythmNoteP1_1_1_3 = <{ kind: "rhythm", duration: 2, type: "quarter", dots: 0 }>
+
+noteP1_2_1_1 = <{ kind: "note", partId: "P1", measureNumber: 2, voice: "1", type: "quarter" }>
+pitchNoteP1_2_1_1 = <{ kind: "pitch", step: "C", alter: 1, octave: 5 }>
+rhythmNoteP1_2_1_1 = <{ kind: "rhythm", duration: 2, type: "quarter", dots: 0 }>
+
+noteP1_2_1_2 = <{ kind: "note", partId: "P1", measureNumber: 2, voice: "1", type: "quarter" }>
+pitchNoteP1_2_1_2 = <{ kind: "pitch", step: "B", octave: 4 }>
+rhythmNoteP1_2_1_2 = <{ kind: "rhythm", duration: 2, type: "quarter", dots: 0 }>
+
+noteP1_2_1_3 = <{ kind: "note", partId: "P1", measureNumber: 2, voice: "1", type: "quarter" }>
+pitchNoteP1_2_1_3 = <{ kind: "pitch", step: "A", octave: 4 }>
+rhythmNoteP1_2_1_3 = <{ kind: "rhythm", duration: 2, type: "quarter", dots: 0 }>
+
+@seed:
+  nodes: [
+    scoreMain,
+    partP1,
+    measureP1_1,
+    measureP1_2,
+
+    noteP1_1_1_1,
+    pitchNoteP1_1_1_1,
+    rhythmNoteP1_1_1_1,
+    lyricNoteP1_1_1_1,
+
+    noteP1_1_1_2,
+    pitchNoteP1_1_1_2,
+    rhythmNoteP1_1_1_2,
+
+    noteP1_1_1_3,
+    pitchNoteP1_1_1_3,
+    rhythmNoteP1_1_1_3,
+
+    noteP1_2_1_1,
+    pitchNoteP1_2_1_1,
+    rhythmNoteP1_2_1_1,
+
+    noteP1_2_1_2,
+    pitchNoteP1_2_1_2,
+    rhythmNoteP1_2_1_2,
+
+    noteP1_2_1_3,
+    pitchNoteP1_2_1_3,
+    rhythmNoteP1_2_1_3
+  ]
+  edges: [
+    scoreContainsPartP1 := [scoreMain : "contains" : partP1],
+
+    partP1ContainsMeasure1 := [partP1 : "contains" : measureP1_1],
+    partP1ContainsMeasure2 := [partP1 : "contains" : measureP1_2],
+
+    measure1ContainsNote1 := [measureP1_1 : "contains" : noteP1_1_1_1],
+    note1HasPitch := [noteP1_1_1_1 : "hasPitch" : pitchNoteP1_1_1_1],
+    note1HasRhythm := [noteP1_1_1_1 : "hasRhythm" : rhythmNoteP1_1_1_1],
+    note1HasLyric := [noteP1_1_1_1 : "hasLyric" : lyricNoteP1_1_1_1],
+
+    measure1ContainsNote2 := [measureP1_1 : "contains" : noteP1_1_1_2],
+    note2HasPitch := [noteP1_1_1_2 : "hasPitch" : pitchNoteP1_1_1_2],
+    note2HasRhythm := [noteP1_1_1_2 : "hasRhythm" : rhythmNoteP1_1_1_2],
+
+    measure1ContainsNote3 := [measureP1_1 : "contains" : noteP1_1_1_3],
+    note3HasPitch := [noteP1_1_1_3 : "hasPitch" : pitchNoteP1_1_1_3],
+    note3HasRhythm := [noteP1_1_1_3 : "hasRhythm" : rhythmNoteP1_1_1_3],
+
+    measure2ContainsNote1 := [measureP1_2 : "contains" : noteP1_2_1_1],
+    measure2Note1HasPitch := [noteP1_2_1_1 : "hasPitch" : pitchNoteP1_2_1_1],
+    measure2Note1HasRhythm := [noteP1_2_1_1 : "hasRhythm" : rhythmNoteP1_2_1_1],
+
+    measure2ContainsNote2 := [measureP1_2 : "contains" : noteP1_2_1_2],
+    measure2Note2HasPitch := [noteP1_2_1_2 : "hasPitch" : pitchNoteP1_2_1_2],
+    measure2Note2HasRhythm := [noteP1_2_1_2 : "hasRhythm" : rhythmNoteP1_2_1_2],
+
+    measure2ContainsNote3 := [measureP1_2 : "contains" : noteP1_2_1_3],
+    measure2Note3HasPitch := [noteP1_2_1_3 : "hasPitch" : pitchNoteP1_2_1_3],
+    measure2Note3HasRhythm := [noteP1_2_1_3 : "hasRhythm" : rhythmNoteP1_2_1_3]
+  ]
+  state: {}
+  meta: {}
+  root: scoreMain
+
+scoreExcerpt := @seed
+  -> @graft.progress(noteP1_1_1_1, "precedes", noteP1_1_1_2)
+  -> @graft.progress(noteP1_1_1_2, "precedes", noteP1_1_1_3)
+  -> @graft.progress(noteP1_1_1_3, "precedes", noteP1_2_1_1)
+  -> @graft.progress(noteP1_2_1_1, "precedes", noteP1_2_1_2)
+  -> @graft.progress(noteP1_2_1_2, "precedes", noteP1_2_1_3)
+
+  -> @graft.state(noteP1_1_1_1, "selected", false)
+  -> @graft.state(noteP1_2_1_1, "selected", false)
+
+  -> @graft.meta(measureP1_1, "key", { fifths: 3, mode: "major" })
+  -> @graft.meta(measureP1_1, "meter", { beats: 3, beatType: 4 })
+  -> @graft.meta(measureP1_1, "clef", { sign: "G", line: 2 })
+  -> @graft.meta(measureP1_1, "tempo", 120)
+
+  -> @graft.meta(noteP1_1_1_1, "slurStart", true)
+  -> @graft.meta(noteP1_1_1_1, "dynamic", "p")
+  -> @graft.meta(noteP1_1_1_1, "wedgeStart", "crescendo")
+  -> @graft.meta(noteP1_1_1_1, "lyricExtendStart", true)
+
+  -> @graft.meta(noteP1_2_1_3, "slurStop", true)
+  -> @graft.meta(noteP1_2_1_3, "lyricExtendStop", true)
+  -> @graft.meta(noteP1_2_1_3, "wedgeStop", true)
+
+  <> @project(format: "graph")

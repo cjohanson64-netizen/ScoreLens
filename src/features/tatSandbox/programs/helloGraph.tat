@@ -1,0 +1,20 @@
+score = <{ kind: "score", label: "Demo Score" }>
+measure1 = <{ kind: "measure", number: 1 }>
+note1 = <{ kind: "note", pitch: "C4" }>
+
+@seed:
+  nodes: [score, measure1, note1]
+  edges: [
+    scoreContainsMeasure1 := [score : "contains" : measure1],
+    measure1ContainsNote1 := [measure1 : "contains" : note1]
+  ]
+  state: {}
+  meta: {}
+  root: score
+
+scoreGraph := @seed
+  -> @graft.state(note1, "selected", true)
+  -> @graft.meta(note1, "source", "sandbox")
+  -> @graft.progress(measure1, "next", note1)
+  -> @ctx.set(scoreContainsMeasure1, { view: "structure" })
+  <> @project(format: "graph")

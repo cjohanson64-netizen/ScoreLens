@@ -1,0 +1,22 @@
+A = <Ti>
+B = <Do>
+
+node1 = <A>
+node2 = <B>
+
+@seed:
+  nodes: [node1, node2]
+  edges: [
+    [node1 : "supports" : node2]
+  ]
+  state: {}
+  meta: {}
+  root: node1
+
+graph1 := @seed
+  <> @project(format: "graph")
+
+graph2 := @seed
+  <> @project(format: "graph")
+
+graph1 ::: graph2

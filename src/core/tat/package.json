@@ -1,0 +1,31 @@
+{
+  "name": "language-v1.0",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "example": "ts-node runExample.ts",
+    "test:lexer": "node --test --require ts-node/register tests/lexer.test.ts",
+    "test:parser": "node --test --require ts-node/register tests/parser.test.ts",
+    "test:runtime": "node --test --require ts-node/register tests/runtime.test.ts",
+    "test:query": "node --test --require ts-node/register tests/query.test.ts",
+    "test:action": "node --test --require ts-node/register tests/action.test.ts",
+    "test:apply": "node --test --require ts-node/register tests/apply.test.ts",
+    "test:ctx": "node --test --require ts-node/register tests/ctx.test.ts",
+    "test:how": "node --test --require ts-node/register tests/how.test.ts",
+    "test:project": "node --test --require ts-node/register tests/project.test.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/node": "^25.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

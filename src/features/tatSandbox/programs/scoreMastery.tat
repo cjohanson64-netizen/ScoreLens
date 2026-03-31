@@ -1,0 +1,138 @@
+score = <{ kind: "score", title: "Demo Score" }>
+staff1 = <{ kind: "staff", clef: "treble" }>
+measure1 = <{ kind: "measure", number: 1 }>
+voice1 = <{ kind: "voice", label: "Soprano" }>
+
+note1 = <{ kind: "note", label: "Note 1" }>
+note2 = <{ kind: "note", label: "Note 2" }>
+
+pitch1 = <{ kind: "pitch", step: "C", octave: 4, accidental: "natural" }>
+pitch2 = <{ kind: "pitch", step: "D", octave: 4, accidental: "natural" }>
+
+rhythm1 = <{ kind: "rhythm", duration: "quarter" }>
+rhythm2 = <{ kind: "rhythm", duration: "quarter" }>
+
+attempt1 = <{ kind: "attempt", label: "Attempt 1" }>
+
+intonationDiagnostic = <{ kind: "diagnostic", name: "intonation", label: "Intonation" }>
+rhythmAccuracyDiagnostic = <{ kind: "diagnostic", name: "rhythmAccuracy", label: "Rhythm Accuracy" }>
+
+pitchAccuracyGoal = <{ kind: "goal", name: "pitchAccuracyGoal", label: "Pitch Accuracy Goal" }>
+rhythmAccuracyGoal = <{ kind: "goal", name: "rhythmAccuracyGoal", label: "Rhythm Accuracy Goal" }>
+consistencyGoal = <{ kind: "goal", name: "consistencyGoal", label: "Consistency Goal" }>
+
+@seed:
+  nodes: [
+    score,
+    staff1,
+    measure1,
+    voice1,
+    note1,
+    note2,
+    pitch1,
+    pitch2,
+    rhythm1,
+    rhythm2,
+    attempt1,
+    intonationDiagnostic,
+    rhythmAccuracyDiagnostic,
+    pitchAccuracyGoal,
+    rhythmAccuracyGoal,
+    consistencyGoal
+  ]
+  edges: [
+    scoreContainsStaff1 := [score : "contains" : staff1],
+    staff1ContainsMeasure1 := [staff1 : "contains" : measure1],
+    measure1ContainsNote1 := [measure1 : "contains" : note1],
+    measure1ContainsNote2 := [measure1 : "contains" : note2],
+
+    note1HasPitch1 := [note1 : "hasPitch" : pitch1],
+    note2HasPitch2 := [note2 : "hasPitch" : pitch2],
+
+    note1HasRhythm1 := [note1 : "hasRhythm" : rhythm1],
+    note2HasRhythm2 := [note2 : "hasRhythm" : rhythm2],
+
+    note1BelongsToVoice1 := [note1 : "belongsTo" : voice1],
+    note2BelongsToVoice1 := [note2 : "belongsTo" : voice1],
+
+    attempt1EvaluatesNote1 := [attempt1 : "evaluates" : note1],
+    attempt1EvaluatesNote2 := [attempt1 : "evaluates" : note2],
+
+    note2DiagnosedAsIntonation := [note2 : "diagnosedAs" : intonationDiagnostic],
+    note2DiagnosedAsRhythmAccuracy := [note2 : "diagnosedAs" : rhythmAccuracyDiagnostic],
+
+    pitchAccuracyGoalTargetsIntonation := [pitchAccuracyGoal : "targets" : intonationDiagnostic],
+    rhythmAccuracyGoalTargetsRhythmAccuracy := [rhythmAccuracyGoal : "targets" : rhythmAccuracyDiagnostic],
+    consistencyGoalTargetsNote2 := [consistencyGoal : "targets" : note2]
+  ]
+  state: {}
+  meta: {}
+  root: score
+
+scoreMastery := @seed
+  -> @graft.state(note1, "selected", true)
+  -> @graft.state(note1, "correct", true)
+
+  -> @graft.state(note2, "selected", true)
+  -> @graft.state(note2, "correct", false)
+  -> @graft.state(note2, "needsReview", true)
+
+  -> @graft.state(intonationDiagnostic, "active", true)
+  -> @graft.state(intonationDiagnostic, "confirmed", true)
+
+  -> @graft.state(rhythmAccuracyDiagnostic, "active", true)
+  -> @graft.state(rhythmAccuracyDiagnostic, "confirmed", true)
+
+  -> @graft.state(pitchAccuracyGoal, "active", true)
+  -> @graft.state(pitchAccuracyGoal, "met", false)
+  -> @graft.state(pitchAccuracyGoal, "needsWork", true)
+
+  -> @graft.state(rhythmAccuracyGoal, "active", true)
+  -> @graft.state(rhythmAccuracyGoal, "met", false)
+  -> @graft.state(rhythmAccuracyGoal, "needsWork", true)
+
+  -> @graft.state(consistencyGoal, "active", true)
+  -> @graft.state(consistencyGoal, "met", false)
+  -> @graft.state(consistencyGoal, "needsWork", true)
+
+  -> @graft.meta(note1, "feedback", "Accurate pitch and rhythm")
+  -> @graft.meta(note2, "feedback", "Pitch was sharp and release timing was inconsistent")
+  -> @graft.meta(note2, "expectedPitch", "D4")
+  -> @graft.meta(note2, "observedPitch", "D#4")
+  -> @graft.meta(note2, "expectedRhythm", "quarter")
+  -> @graft.meta(note2, "observedRhythm", "quarter-late-release")
+
+  -> @graft.meta(intonationDiagnostic, "severity", "moderate")
+  -> @graft.meta(intonationDiagnostic, "confidence", 0.88)
+  -> @graft.meta(intonationDiagnostic, "explanation", "Observed pitch exceeded expected pitch target")
+
+  -> @graft.meta(rhythmAccuracyDiagnostic, "severity", "low")
+  -> @graft.meta(rhythmAccuracyDiagnostic, "confidence", 0.72)
+  -> @graft.meta(rhythmAccuracyDiagnostic, "explanation", "Release timing was inconsistent with expected duration")
+
+  -> @graft.meta(pitchAccuracyGoal, "threshold", 0.9)
+  -> @graft.meta(pitchAccuracyGoal, "minimumAttempts", 2)
+  -> @graft.meta(pitchAccuracyGoal, "maximumAttempts", 4)
+  -> @graft.meta(pitchAccuracyGoal, "masteryWindow", 2)
+  -> @graft.meta(pitchAccuracyGoal, "priority", "high")
+
+  -> @graft.meta(rhythmAccuracyGoal, "threshold", 0.85)
+  -> @graft.meta(rhythmAccuracyGoal, "minimumAttempts", 2)
+  -> @graft.meta(rhythmAccuracyGoal, "maximumAttempts", 4)
+  -> @graft.meta(rhythmAccuracyGoal, "masteryWindow", 2)
+  -> @graft.meta(rhythmAccuracyGoal, "priority", "moderate")
+
+  -> @graft.meta(consistencyGoal, "threshold", 1)
+  -> @graft.meta(consistencyGoal, "minimumAttempts", 2)
+  -> @graft.meta(consistencyGoal, "maximumAttempts", 4)
+  -> @graft.meta(consistencyGoal, "masteryWindow", 2)
+  -> @graft.meta(consistencyGoal, "priority", "high")
+  -> @graft.meta(consistencyGoal, "explanation", "Learner must demonstrate stable success across repeated attempts")
+
+  -> @graft.progress(note1, "precedes", note2)
+
+  -> @ctx.set(note2DiagnosedAsIntonation, { view: "mastery", focus: "pitch" })
+  -> @ctx.set(note2DiagnosedAsRhythmAccuracy, { view: "mastery", focus: "rhythm" })
+  -> @ctx.set(consistencyGoalTargetsNote2, { view: "mastery", focus: "consistency" })
+
+  <> @project(format: "graph")

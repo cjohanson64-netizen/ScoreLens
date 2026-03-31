@@ -1,0 +1,158 @@
+score = <{ kind: "score", title: "Demo Score" }>
+staff1 = <{ kind: "staff", clef: "treble" }>
+measure1 = <{ kind: "measure", number: 1 }>
+voice1 = <{ kind: "voice", label: "Soprano" }>
+
+note1 = <{ kind: "note", label: "Note 1" }>
+note2 = <{ kind: "note", label: "Note 2" }>
+
+pitch1 = <{ kind: "pitch", step: "C", octave: 4, accidental: "natural" }>
+pitch2 = <{ kind: "pitch", step: "D", octave: 4, accidental: "natural" }>
+
+rhythm1 = <{ kind: "rhythm", duration: "quarter" }>
+rhythm2 = <{ kind: "rhythm", duration: "quarter" }>
+
+attempt1 = <{ kind: "attempt", label: "Attempt 1" }>
+
+intonationDiagnostic = <{ kind: "diagnostic", name: "intonation", label: "Intonation" }>
+consistencyDiagnostic = <{ kind: "diagnostic", name: "inconsistentExecution", label: "Inconsistent Execution" }>
+
+pitchAccuracyGoal = <{ kind: "goal", name: "pitchAccuracyGoal", label: "Pitch Accuracy Goal" }>
+consistencyGoal = <{ kind: "goal", name: "consistencyGoal", label: "Consistency Goal" }>
+
+retryDecision = <{ kind: "decision", name: "retry", label: "Retry" }>
+slowDownDecision = <{ kind: "decision", name: "slowDown", label: "Slow Down" }>
+
+@seed:
+  nodes: [
+    score,
+    staff1,
+    measure1,
+    voice1,
+    note1,
+    note2,
+    pitch1,
+    pitch2,
+    rhythm1,
+    rhythm2,
+    attempt1,
+    intonationDiagnostic,
+    consistencyDiagnostic,
+    pitchAccuracyGoal,
+    consistencyGoal,
+    retryDecision,
+    slowDownDecision
+  ]
+  edges: [
+    scoreContainsStaff1 := [score : "contains" : staff1],
+    staff1ContainsMeasure1 := [staff1 : "contains" : measure1],
+    measure1ContainsNote1 := [measure1 : "contains" : note1],
+    measure1ContainsNote2 := [measure1 : "contains" : note2],
+
+    note1HasPitch1 := [note1 : "hasPitch" : pitch1],
+    note2HasPitch2 := [note2 : "hasPitch" : pitch2],
+
+    note1HasRhythm1 := [note1 : "hasRhythm" : rhythm1],
+    note2HasRhythm2 := [note2 : "hasRhythm" : rhythm2],
+
+    note1BelongsToVoice1 := [note1 : "belongsTo" : voice1],
+    note2BelongsToVoice1 := [note2 : "belongsTo" : voice1],
+
+    attempt1EvaluatesNote1 := [attempt1 : "evaluates" : note1],
+    attempt1EvaluatesNote2 := [attempt1 : "evaluates" : note2],
+
+    note2DiagnosedAsIntonation := [note2 : "diagnosedAs" : intonationDiagnostic],
+    note2DiagnosedAsConsistency := [note2 : "diagnosedAs" : consistencyDiagnostic],
+
+    pitchAccuracyGoalTargetsIntonation := [pitchAccuracyGoal : "targets" : intonationDiagnostic],
+    consistencyGoalTargetsConsistency := [consistencyGoal : "targets" : consistencyDiagnostic],
+
+    attempt1DecidesRetry := [attempt1 : "decides" : retryDecision],
+    attempt1DecidesSlowDown := [attempt1 : "decides" : slowDownDecision],
+
+    retryAppliesToNote2 := [retryDecision : "appliesTo" : note2],
+    retryTriggeredByIntonation := [retryDecision : "triggeredBy" : intonationDiagnostic],
+    retrySupportsPitchAccuracyGoal := [retryDecision : "supports" : pitchAccuracyGoal],
+
+    slowDownAppliesToNote2 := [slowDownDecision : "appliesTo" : note2],
+    slowDownTriggeredByConsistency := [slowDownDecision : "triggeredBy" : consistencyDiagnostic],
+    slowDownSupportsConsistencyGoal := [slowDownDecision : "supports" : consistencyGoal]
+  ]
+  state: {}
+  meta: {}
+  root: score
+
+scoreDecisions := @seed
+  -> @graft.state(note1, "selected", true)
+  -> @graft.state(note1, "correct", true)
+  -> @graft.state(note1, "progression", "complete")
+
+  -> @graft.state(note2, "selected", true)
+  -> @graft.state(note2, "correct", false)
+  -> @graft.state(note2, "needsReview", true)
+  -> @graft.state(note2, "progression", "inProgress")
+
+  -> @graft.state(intonationDiagnostic, "active", true)
+  -> @graft.state(intonationDiagnostic, "confirmed", true)
+
+  -> @graft.state(consistencyDiagnostic, "active", true)
+  -> @graft.state(consistencyDiagnostic, "confirmed", true)
+
+  -> @graft.state(pitchAccuracyGoal, "active", true)
+  -> @graft.state(pitchAccuracyGoal, "met", false)
+  -> @graft.state(pitchAccuracyGoal, "needsWork", true)
+  -> @graft.state(pitchAccuracyGoal, "progression", "inProgress")
+
+  -> @graft.state(consistencyGoal, "active", true)
+  -> @graft.state(consistencyGoal, "met", false)
+  -> @graft.state(consistencyGoal, "needsWork", true)
+  -> @graft.state(consistencyGoal, "progression", "stalled")
+
+  -> @graft.state(retryDecision, "active", true)
+  -> @graft.state(retryDecision, "selected", true)
+  -> @graft.state(retryDecision, "applied", true)
+
+  -> @graft.state(slowDownDecision, "active", true)
+  -> @graft.state(slowDownDecision, "selected", true)
+  -> @graft.state(slowDownDecision, "applied", true)
+
+  -> @graft.meta(note2, "feedback", "Pitch was sharp and execution was inconsistent")
+  -> @graft.meta(note2, "expectedPitch", "D4")
+  -> @graft.meta(note2, "observedPitch", "D#4")
+
+  -> @graft.meta(intonationDiagnostic, "severity", "moderate")
+  -> @graft.meta(intonationDiagnostic, "confidence", 0.87)
+  -> @graft.meta(intonationDiagnostic, "explanation", "Observed pitch exceeded expected pitch target")
+
+  -> @graft.meta(consistencyDiagnostic, "severity", "moderate")
+  -> @graft.meta(consistencyDiagnostic, "confidence", 0.79)
+  -> @graft.meta(consistencyDiagnostic, "explanation", "Correct execution was not stable across attempts")
+
+  -> @graft.meta(pitchAccuracyGoal, "threshold", 0.9)
+  -> @graft.meta(pitchAccuracyGoal, "minimumAttempts", 2)
+  -> @graft.meta(pitchAccuracyGoal, "maximumAttempts", 4)
+  -> @graft.meta(pitchAccuracyGoal, "masteryWindow", 2)
+
+  -> @graft.meta(consistencyGoal, "threshold", 1)
+  -> @graft.meta(consistencyGoal, "minimumAttempts", 2)
+  -> @graft.meta(consistencyGoal, "maximumAttempts", 4)
+  -> @graft.meta(consistencyGoal, "masteryWindow", 2)
+
+  -> @graft.meta(retryDecision, "reason", "Goal threshold not yet met and attempts remain")
+  -> @graft.meta(retryDecision, "confidence", 0.91)
+  -> @graft.meta(retryDecision, "priority", "high")
+  -> @graft.meta(retryDecision, "explanation", "Repeat the target immediately to reinforce accurate pitch production")
+
+  -> @graft.meta(slowDownDecision, "reason", "Execution stability is weak at current pacing")
+  -> @graft.meta(slowDownDecision, "confidence", 0.83)
+  -> @graft.meta(slowDownDecision, "priority", "moderate")
+  -> @graft.meta(slowDownDecision, "explanation", "Reduce tempo to improve consistency and control")
+
+  -> @graft.progress(note1, "precedes", note2)
+
+  -> @ctx.set(note2DiagnosedAsIntonation, { view: "decisions", focus: "pitch" })
+  -> @ctx.set(note2DiagnosedAsConsistency, { view: "decisions", focus: "consistency" })
+  -> @ctx.set(attempt1DecidesRetry, { view: "decisions", layer: "flow" })
+  -> @ctx.set(attempt1DecidesSlowDown, { view: "decisions", layer: "support" })
+
+  <> @project(format: "graph")

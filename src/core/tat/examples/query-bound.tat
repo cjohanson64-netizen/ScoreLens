@@ -1,0 +1,18 @@
+A = <Ti>
+B = <Do>
+
+node1 = <A>
+node2 = <B>
+
+@seed:
+  nodes: [node1, node2]
+  edges: [
+    [node1 : "supports" : node2]
+  ]
+  state: {}
+  meta: {}
+  root: node1
+
+@match(node1 : "supports" : Y)
+@match(node1 : "supports" : node2)
+@match(X : "supports" : Y)

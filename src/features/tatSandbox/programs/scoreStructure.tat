@@ -1,0 +1,20 @@
+score = <{ kind: "score", label: "Demo Score" }>
+staff1 = <{ kind: "staff", clef: "treble" }>
+measure1 = <{ kind: "measure", number: 1 }>
+note1 = <{ kind: "note", pitch: "C4", duration: "quarter" }>
+pitch1 = <{ kind: "pitch", step: "C", octave: 4 }>
+
+@seed:
+  nodes: [score, staff1, measure1, note1, pitch1]
+  edges: [
+    scoreContainsStaff1 := [score : "contains" : staff1],
+    staff1ContainsMeasure1 := [staff1 : "contains" : measure1],
+    measure1ContainsNote1 := [measure1 : "contains" : note1],
+    note1HasPitch1 := [note1 : "hasPitch" : pitch1]
+  ]
+  state: {}
+  meta: {}
+  root: score
+
+scoreStructure := @seed
+  <> @project(format: "graph")

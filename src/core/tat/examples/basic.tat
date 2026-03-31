@@ -1,0 +1,34 @@
+A = <Ti>
+B = <Do>
+C = <"voice">
+D = <"Soprano">
+
+x := @action(resolve) { ... }
+y := @ctx(scope: "partWriting")
+z := @ctx(scope: "voiceLeading")
+
+node1 = <A.x.B..y..C.z.D>
+node2 = <{id: "Ti", pitch: 71}>
+node3 = <V.resolve.I>
+
+@seed:
+  nodes: [node1, node2, node3]
+  edges: [
+    [node2 : "inside" : node3],
+    [node1 : "projects" : node2]
+  ]
+  state: {}
+  meta: {}
+  root: node1
+
+graph1 := @seed
+  -> @graft.branch(node1, "supports", node3)
+  -> @graft.state(node1, "active", true)
+  -> @graft.meta(node2, "priority", "high")
+  <> @project(format: "graph")
+
+graph2 := @seed
+  -> @graft.progress(node1, "transitionsTo", node2)
+  <> @project(format: "graph")
+
+graph1 ::: graph2

@@ -1,0 +1,11 @@
+A = <Ti>
+B = <Do>
+C = <"voice">
+D = <"Soprano">
+
+x := @action(resolve) { ... }
+y := @ctx(scope: "partWriting")
+z := @ctx(scope: "voiceLeading")
+
+node1 = <A.x.B..y..C.z.D>
+node2 = <V.resolve.I>

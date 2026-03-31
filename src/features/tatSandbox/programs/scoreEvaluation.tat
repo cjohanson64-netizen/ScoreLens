@@ -1,0 +1,71 @@
+score = <{ kind: "score", title: "Demo Score" }>
+staff1 = <{ kind: "staff", clef: "treble" }>
+measure1 = <{ kind: "measure", number: 1 }>
+
+voice1 = <{ kind: "voice", label: "Soprano" }>
+
+note1 = <{ kind: "note", label: "Note 1" }>
+note2 = <{ kind: "note", label: "Note 2" }>
+
+pitch1 = <{ kind: "pitch", step: "C", octave: 4, accidental: "natural" }>
+pitch2 = <{ kind: "pitch", step: "D", octave: 4, accidental: "natural" }>
+
+rhythm1 = <{ kind: "rhythm", duration: "quarter" }>
+rhythm2 = <{ kind: "rhythm", duration: "quarter" }>
+
+attempt1 = <{ kind: "attempt", label: "Attempt 1" }>
+diagnostic1 = <{ kind: "diagnostic", label: "Intonation Issue" }>
+goal1 = <{ kind: "goal", label: "Pitch Accuracy" }>
+
+@seed:
+  nodes: [
+    score,
+    staff1,
+    measure1,
+    voice1,
+    note1,
+    note2,
+    pitch1,
+    pitch2,
+    rhythm1,
+    rhythm2,
+    attempt1,
+    diagnostic1,
+    goal1
+  ]
+  edges: [
+    scoreContainsStaff1 := [score : "contains" : staff1],
+    staff1ContainsMeasure1 := [staff1 : "contains" : measure1],
+    measure1ContainsNote1 := [measure1 : "contains" : note1],
+    measure1ContainsNote2 := [measure1 : "contains" : note2],
+    note1HasPitch1 := [note1 : "hasPitch" : pitch1],
+    note2HasPitch2 := [note2 : "hasPitch" : pitch2],
+    note1HasRhythm1 := [note1 : "hasRhythm" : rhythm1],
+    note2HasRhythm2 := [note2 : "hasRhythm" : rhythm2],
+    note1BelongsToVoice1 := [note1 : "belongsTo" : voice1],
+    note2BelongsToVoice1 := [note2 : "belongsTo" : voice1],
+    attempt1EvaluatesNote1 := [attempt1 : "evaluates" : note1],
+    attempt1EvaluatesNote2 := [attempt1 : "evaluates" : note2],
+    note2DiagnosedAsDiagnostic1 := [note2 : "diagnosedAs" : diagnostic1],
+    goal1TargetsDiagnostic1 := [goal1 : "targets" : diagnostic1]
+  ]
+  state: {}
+  meta: {}
+  root: score
+
+scoreEvaluation := @seed
+  -> @graft.state(note1, "selected", true)
+  -> @graft.state(note1, "correct", true)
+  -> @graft.state(note2, "selected", true)
+  -> @graft.state(note2, "correct", false)
+  -> @graft.state(note2, "needsReview", true)
+  -> @graft.meta(note1, "feedback", "Accurate pitch and rhythm")
+  -> @graft.meta(note2, "feedback", "Pitch was sharp during the attempt")
+  -> @graft.meta(note2, "expectedPitch", "D4")
+  -> @graft.meta(note2, "observedPitch", "D#4")
+  -> @graft.meta(note2, "confidence", 0.82)
+  -> @graft.meta(diagnostic1, "severity", "moderate")
+  -> @graft.meta(diagnostic1, "explanation", "Observed pitch exceeded expected pitch target")
+  -> @graft.progress(note1, "precedes", note2)
+  -> @ctx.set(note2DiagnosedAsDiagnostic1, { view: "evaluation", focus: "intonation" })
+  <> @project(format: "graph")

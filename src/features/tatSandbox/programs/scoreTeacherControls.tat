@@ -1,0 +1,223 @@
+score = <{ kind: "score", title: "Demo Score" }>
+staff1 = <{ kind: "staff", clef: "treble" }>
+measure1 = <{ kind: "measure", number: 1 }>
+voice1 = <{ kind: "voice", label: "Soprano" }>
+
+note1 = <{ kind: "note", label: "Note 1" }>
+note2 = <{ kind: "note", label: "Note 2" }>
+
+pitch1 = <{ kind: "pitch", step: "C", octave: 4, accidental: "natural" }>
+pitch2 = <{ kind: "pitch", step: "D", octave: 4, accidental: "natural" }>
+
+rhythm1 = <{ kind: "rhythm", duration: "quarter" }>
+rhythm2 = <{ kind: "rhythm", duration: "quarter" }>
+
+attempt1 = <{ kind: "attempt", label: "Attempt 1" }>
+
+intonationDiagnostic = <{ kind: "diagnostic", name: "intonation", label: "Intonation" }>
+consistencyDiagnostic = <{ kind: "diagnostic", name: "inconsistentExecution", label: "Inconsistent Execution" }>
+
+pitchAccuracyGoal = <{ kind: "goal", name: "pitchAccuracyGoal", label: "Pitch Accuracy Goal" }>
+consistencyGoal = <{ kind: "goal", name: "consistencyGoal", label: "Consistency Goal" }>
+
+retryDecision = <{ kind: "decision", name: "retry", label: "Retry" }>
+slowDownDecision = <{ kind: "decision", name: "slowDown", label: "Slow Down" }>
+moveOnDecision = <{ kind: "decision", name: "moveOn", label: "Move On" }>
+teacherInterventionDecision = <{ kind: "decision", name: "teacherIntervention", label: "Teacher Intervention" }>
+
+teacherPreset1 = <{ kind: "control", name: "teacherPreset", label: "Teacher Preset" }>
+allowSlowDownControl = <{ kind: "control", name: "allowSlowDown", label: "Allow Slow Down" }>
+moveOnOverride = <{ kind: "control", name: "allowMoveOn", label: "Allow Move On Override" }>
+
+@seed:
+  nodes: [
+    score,
+    staff1,
+    measure1,
+    voice1,
+    note1,
+    note2,
+    pitch1,
+    pitch2,
+    rhythm1,
+    rhythm2,
+    attempt1,
+    intonationDiagnostic,
+    consistencyDiagnostic,
+    pitchAccuracyGoal,
+    consistencyGoal,
+    retryDecision,
+    slowDownDecision,
+    moveOnDecision,
+    teacherInterventionDecision,
+    teacherPreset1,
+    allowSlowDownControl,
+    moveOnOverride
+  ]
+  edges: [
+    scoreContainsStaff1 := [score : "contains" : staff1],
+    staff1ContainsMeasure1 := [staff1 : "contains" : measure1],
+    measure1ContainsNote1 := [measure1 : "contains" : note1],
+    measure1ContainsNote2 := [measure1 : "contains" : note2],
+
+    note1HasPitch1 := [note1 : "hasPitch" : pitch1],
+    note2HasPitch2 := [note2 : "hasPitch" : pitch2],
+
+    note1HasRhythm1 := [note1 : "hasRhythm" : rhythm1],
+    note2HasRhythm2 := [note2 : "hasRhythm" : rhythm2],
+
+    note1BelongsToVoice1 := [note1 : "belongsTo" : voice1],
+    note2BelongsToVoice1 := [note2 : "belongsTo" : voice1],
+
+    attempt1EvaluatesNote1 := [attempt1 : "evaluates" : note1],
+    attempt1EvaluatesNote2 := [attempt1 : "evaluates" : note2],
+
+    note2DiagnosedAsIntonation := [note2 : "diagnosedAs" : intonationDiagnostic],
+    note2DiagnosedAsConsistency := [note2 : "diagnosedAs" : consistencyDiagnostic],
+
+    pitchAccuracyGoalTargetsIntonation := [pitchAccuracyGoal : "targets" : intonationDiagnostic],
+    consistencyGoalTargetsConsistency := [consistencyGoal : "targets" : consistencyDiagnostic],
+
+    attempt1DecidesRetry := [attempt1 : "decides" : retryDecision],
+    attempt1DecidesSlowDown := [attempt1 : "decides" : slowDownDecision],
+    attempt1DecidesTeacherIntervention := [attempt1 : "decides" : teacherInterventionDecision],
+
+    retryAppliesToNote2 := [retryDecision : "appliesTo" : note2],
+    retryTriggeredByIntonation := [retryDecision : "triggeredBy" : intonationDiagnostic],
+    retrySupportsPitchAccuracyGoal := [retryDecision : "supports" : pitchAccuracyGoal],
+
+    slowDownAppliesToNote2 := [slowDownDecision : "appliesTo" : note2],
+    slowDownTriggeredByConsistency := [slowDownDecision : "triggeredBy" : consistencyDiagnostic],
+    slowDownSupportsConsistencyGoal := [slowDownDecision : "supports" : consistencyGoal],
+
+    teacherInterventionAppliesToNote2 := [teacherInterventionDecision : "appliesTo" : note2],
+    teacherInterventionTriggeredByConsistency := [teacherInterventionDecision : "triggeredBy" : consistencyGoal],
+
+    teacherPresetConfiguresPitchGoal := [teacherPreset1 : "configures" : pitchAccuracyGoal],
+    teacherPresetConfiguresConsistencyGoal := [teacherPreset1 : "configures" : consistencyGoal],
+
+    allowSlowDownPermitsSlowDown := [allowSlowDownControl : "permits" : slowDownDecision],
+    moveOnOverrideOverridesRetry := [moveOnOverride : "overrides" : retryDecision],
+    moveOnOverrideOverridesTeacherIntervention := [moveOnOverride : "overrides" : teacherInterventionDecision]
+  ]
+  state: {}
+  meta: {}
+  root: score
+
+scoreTeacherControls := @seed
+  -> @graft.state(note1, "selected", true)
+  -> @graft.state(note1, "correct", true)
+  -> @graft.state(note1, "progression", "complete")
+
+  -> @graft.state(note2, "selected", true)
+  -> @graft.state(note2, "correct", false)
+  -> @graft.state(note2, "needsReview", true)
+  -> @graft.state(note2, "progression", "stalled")
+
+  -> @graft.state(intonationDiagnostic, "active", true)
+  -> @graft.state(intonationDiagnostic, "confirmed", true)
+
+  -> @graft.state(consistencyDiagnostic, "active", true)
+  -> @graft.state(consistencyDiagnostic, "confirmed", true)
+
+  -> @graft.state(pitchAccuracyGoal, "active", true)
+  -> @graft.state(pitchAccuracyGoal, "met", false)
+  -> @graft.state(pitchAccuracyGoal, "needsWork", true)
+  -> @graft.state(pitchAccuracyGoal, "progression", "inProgress")
+
+  -> @graft.state(consistencyGoal, "active", true)
+  -> @graft.state(consistencyGoal, "met", false)
+  -> @graft.state(consistencyGoal, "needsWork", true)
+  -> @graft.state(consistencyGoal, "progression", "stalled")
+
+  -> @graft.state(retryDecision, "active", true)
+  -> @graft.state(retryDecision, "selected", false)
+  -> @graft.state(retryDecision, "applied", false)
+
+  -> @graft.state(slowDownDecision, "active", true)
+  -> @graft.state(slowDownDecision, "selected", true)
+  -> @graft.state(slowDownDecision, "applied", true)
+
+  -> @graft.state(moveOnDecision, "active", true)
+  -> @graft.state(moveOnDecision, "selected", true)
+  -> @graft.state(moveOnDecision, "applied", true)
+
+  -> @graft.state(teacherInterventionDecision, "active", true)
+  -> @graft.state(teacherInterventionDecision, "selected", false)
+  -> @graft.state(teacherInterventionDecision, "applied", false)
+
+  -> @graft.state(teacherPreset1, "active", true)
+  -> @graft.state(allowSlowDownControl, "enabled", true)
+  -> @graft.state(moveOnOverride, "enabled", true)
+  -> @graft.state(moveOnOverride, "overridden", true)
+
+  -> @graft.meta(note2, "feedback", "Pitch remains sharp, but teacher policy allows supported progression")
+  -> @graft.meta(note2, "expectedPitch", "D4")
+  -> @graft.meta(note2, "observedPitch", "D#4")
+
+  -> @graft.meta(intonationDiagnostic, "severity", "moderate")
+  -> @graft.meta(intonationDiagnostic, "confidence", 0.86)
+  -> @graft.meta(intonationDiagnostic, "explanation", "Observed pitch exceeded expected pitch target")
+
+  -> @graft.meta(consistencyDiagnostic, "severity", "moderate")
+  -> @graft.meta(consistencyDiagnostic, "confidence", 0.78)
+  -> @graft.meta(consistencyDiagnostic, "explanation", "Correct execution was not stable across attempts")
+
+  -> @graft.meta(pitchAccuracyGoal, "threshold", 0.9)
+  -> @graft.meta(pitchAccuracyGoal, "minimumAttempts", 2)
+  -> @graft.meta(pitchAccuracyGoal, "maximumAttempts", 4)
+  -> @graft.meta(pitchAccuracyGoal, "masteryWindow", 2)
+  -> @graft.meta(pitchAccuracyGoal, "allowMoveOn", true)
+  -> @graft.meta(pitchAccuracyGoal, "allowScaffold", true)
+  -> @graft.meta(pitchAccuracyGoal, "allowSlowDown", true)
+  -> @graft.meta(pitchAccuracyGoal, "stopAfterMaximumAttempts", true)
+
+  -> @graft.meta(consistencyGoal, "threshold", 1)
+  -> @graft.meta(consistencyGoal, "minimumAttempts", 2)
+  -> @graft.meta(consistencyGoal, "maximumAttempts", 4)
+  -> @graft.meta(consistencyGoal, "masteryWindow", 2)
+  -> @graft.meta(consistencyGoal, "allowMoveOn", true)
+  -> @graft.meta(consistencyGoal, "allowScaffold", true)
+  -> @graft.meta(consistencyGoal, "allowSlowDown", true)
+  -> @graft.meta(consistencyGoal, "requireTeacherIntervention", false)
+
+  -> @graft.meta(retryDecision, "reason", "Normally retry would be selected because mastery is not yet met")
+  -> @graft.meta(retryDecision, "confidence", 0.9)
+  -> @graft.meta(retryDecision, "priority", "high")
+  -> @graft.meta(retryDecision, "explanation", "Repeat the target immediately under default policy")
+
+  -> @graft.meta(slowDownDecision, "reason", "Teacher permits slower support pacing")
+  -> @graft.meta(slowDownDecision, "confidence", 0.84)
+  -> @graft.meta(slowDownDecision, "priority", "moderate")
+  -> @graft.meta(slowDownDecision, "explanation", "Reduce tempo to support more stable execution")
+
+  -> @graft.meta(moveOnDecision, "reason", "Teacher override allows progression before full mastery")
+  -> @graft.meta(moveOnDecision, "confidence", 0.8)
+  -> @graft.meta(moveOnDecision, "priority", "moderate")
+  -> @graft.meta(moveOnDecision, "explanation", "Proceed to the next target despite incomplete mastery")
+
+  -> @graft.meta(teacherInterventionDecision, "reason", "Would be selected if teacher intervention were required")
+  -> @graft.meta(teacherInterventionDecision, "confidence", 0.61)
+  -> @graft.meta(teacherInterventionDecision, "priority", "high")
+  -> @graft.meta(teacherInterventionDecision, "explanation", "Escalate to a teacher when automated support is insufficient")
+
+  -> @graft.meta(teacherPreset1, "source", "teacher")
+  -> @graft.meta(teacherPreset1, "scope", "lesson")
+
+  -> @graft.meta(allowSlowDownControl, "value", true)
+  -> @graft.meta(allowSlowDownControl, "source", "teacher")
+  -> @graft.meta(allowSlowDownControl, "scope", "goal")
+
+  -> @graft.meta(moveOnOverride, "value", true)
+  -> @graft.meta(moveOnOverride, "reason", "Teacher wants the student to continue after supported feedback")
+  -> @graft.meta(moveOnOverride, "source", "teacher")
+  -> @graft.meta(moveOnOverride, "scope", "attempt")
+
+  -> @graft.progress(note1, "precedes", note2)
+
+  -> @ctx.set(note2DiagnosedAsIntonation, { view: "teacherControls", focus: "pitch" })
+  -> @ctx.set(note2DiagnosedAsConsistency, { view: "teacherControls", focus: "consistency" })
+  -> @ctx.set(attempt1DecidesSlowDown, { view: "teacherControls", layer: "support" })
+  -> @ctx.set(moveOnOverrideOverridesRetry, { view: "teacherControls", layer: "override" })
+
+  <> @project(format: "graph")
