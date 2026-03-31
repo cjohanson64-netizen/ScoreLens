@@ -9,7 +9,7 @@ import scoreTeacherControlsSource from "./programs/scoreTeacherControls.tat?raw"
 import scorePipelineSource from "./programs/scorePipeline.tat?raw";
 import scoreV1SimpleSource from "./programs/scoreV1Simple.tat?raw";
 import scoreExcerptSource from "./programs/scoreExcerpt.tat?raw";
-import scoreLensDemoXml from "./fixtures/scoreLensDemo.musicxml?raw";
+import scoreLensDemoXml from "./fixtures/ScoreLensDemo.musicxml?raw";
 import { runImportedMusicXml } from "./runImportedMusicXml";
 
 export const sandboxPrograms = {
